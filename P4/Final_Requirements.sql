@@ -95,8 +95,37 @@ END;
 
 EXEC GetManagerData 3;
 
+----- Stored Procedure 4 -----
 
+CREATE PROCEDURE GetOrderDetails 
+    @orderid INT
+AS
+BEGIN
+    -- Check if the order exists
+    IF EXISTS (SELECT 1 FROM Orders WHERE Order_id = @orderid)
+    BEGIN
+        -- Retrieve order details
+        SELECT 
+            o.Order_id,
+            o.Customer_id,
+            ol.Model_id,
+            ol.Quantity
+        FROM 
+            Orders o
+        INNER JOIN 
+            Order_Line ol ON o.Order_id = ol.Order_id
+        WHERE 
+            o.Order_id = @orderid;
+    END
+    ELSE
+    BEGIN
+        -- If order does not exist, return NULL
+        PRINT 'Order does not exist';
+        RETURN;
+    END
+END;
 
+EXEC GetOrderDetails 1;
 -------- View 1 --------
 
 CREATE VIEW Average_Customer_Rating_Per_Model
